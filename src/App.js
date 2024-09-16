@@ -1,18 +1,15 @@
 /* eslint-disable no-undef */
 import { React, useState, useEffect } from "react";
 import Axios from "axios";
-import { Switch, FormControlLabel } from "@mui/material";
+import UsersList from './components/Userlist'
+import FilterComponent from "./components/FilterModule";
+
 
 function App() {
-  const [searchItem, setSearchItem] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isCaseSensitiveToggleSelected, setCaseSensitiveToggleSelected] =
-    useState(false);
-
-  let name_full_formatted = "";
 
   useEffect(() => {
     Axios.get("https://dummyjson.com/users")
@@ -33,12 +30,11 @@ function App() {
       });
   }, []);
 
-  const handleInputChange = (e) => {
-    const searchTerm = e.target.value;
-    setSearchItem(searchTerm);
-
-    const filteredItems = users.filter((user) => {
-      name_full_formatted = user.firstName + " " + user.lastName;
+  const filterUsers = (searchTerm, isCaseSensitiveToggleSelected) => { 
+    // we previously set the input state here, 
+    // you can remove that now
+    const filteredUsers = users.filter((user) => {
+      const name_full_formatted = user.firstName + " " + user.lastName;
       if (isCaseSensitiveToggleSelected) {
         return name_full_formatted.includes(searchTerm);
       } else {
@@ -48,45 +44,16 @@ function App() {
       }
     });
 
-    setFilteredUsers(filteredItems);
-  };
+    setFilteredUsers(filteredUsers);
+  }
 
   return (
     <div style={{ margin: "10px", justifyContent: "center", display: "grid" }}>
       <h1>Dynamic Search Filter</h1>
-      <div style={{ height: "30px", margin: "10px", justifyContent: "grid" }}>
-        <input
-          type="text"
-          value={searchItem}
-          onChange={handleInputChange}
-          placeholder="Type to search"
-          style={{ width: "310px" }}
-        />
-        <div style={{ height: "30px", display: "flex" }}>
-          <FormControlLabel
-            control={
-              <Switch
-                onChange={() => {
-                  setCaseSensitiveToggleSelected(!isCaseSensitiveToggleSelected);
-                }}
-              ></Switch>
-            }
-            label="Turn ON for case sensitive search"
-            style={{ color: "red" }}
-          ></FormControlLabel>
-        </div>
-      </div>
-
-      {!loading && !error && filteredUsers.length === 0 ? (
-        <p>No users found based on the search key.</p>
-      ) : (
-        <ul>
-          {filteredUsers.map((user) => {
-            name_full_formatted = user.firstName + " " + user.lastName;
-            return <li key={user.id}>{name_full_formatted}</li>;
-          })}
-        </ul>
-      )}
+      <FilterComponent onChangeCallback={filterUsers} />
+      {loading && <p className="text">Loading...</p>}
+      {error && <p className="text">Error loading users...</p>}
+      {!loading && !error && <UsersList users={filteredUsers} />}
     </div>
   );
 }
