@@ -11,10 +11,13 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Load the users list by calling the get method for the dummy users json.
   useEffect(() => {
     Axios.get("https://dummyjson.com/users")
       .then((response) => {
         if (response.status === 200) {
+          // initially set both the users & filtered users to the response data.
+          // later we will user the filteredUsers list to dynamically filter the list.
           setUsers(response.data.users);
           setFilteredUsers(response.data.users);
         } else {
@@ -30,17 +33,17 @@ function App() {
       });
   }, []);
 
-  const filterUsers = (searchTerm, isCaseSensitiveToggleSelected) => { 
-    // we previously set the input state here, 
-    // you can remove that now
+  const filterUsers = (searchKey, isCaseSensitiveToggleSelected) => {
+    // using the case sensitive switch state, toggle the functionality
+    // to do a case sensitive search.
     const filteredUsers = users.filter((user) => {
       const name_full_formatted = user.firstName + " " + user.lastName;
       if (isCaseSensitiveToggleSelected) {
-        return name_full_formatted.includes(searchTerm);
+        return name_full_formatted.includes(searchKey);
       } else {
         return name_full_formatted
           .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+          .includes(searchKey.toLowerCase());
       }
     });
 
@@ -51,8 +54,8 @@ function App() {
     <div style={{ margin: "10px", justifyContent: "center", display: "grid" }}>
       <h1>Dynamic Search Filter</h1>
       <FilterComponent onChangeCallback={filterUsers} />
-      {loading && <p className="text">Loading...</p>}
-      {error && <p className="text">Error loading users...</p>}
+      {loading && <p>Loading...</p>}
+      {error && <p>Error loading users...</p>}
       {!loading && !error && <UsersList users={filteredUsers} />}
     </div>
   );

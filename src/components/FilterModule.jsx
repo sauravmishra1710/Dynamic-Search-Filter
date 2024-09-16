@@ -7,17 +7,14 @@ const propTypes = {
 }
 
 const FilterComponent = ({ onChangeCallback }) => {
-  // state to handle the input value
   const [searchItem, setSearchItem] = useState('')
   const [isCaseSensitiveToggleSelected, setCaseSensitiveToggleSelected] = useState(false);
 
-  // new handler function that will update the state 
-  // when the input changes
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setSearchItem(inputValue)
-    // if the component receives a callback, call it,
-    // and pass the input value as an argument
+    // use the callback function to pass on the input searcy key & the state
+    // of the case sensitive search switch to the parent component to perform the search accordingly.
     onChangeCallback && onChangeCallback(inputValue, isCaseSensitiveToggleSelected)
   }
 

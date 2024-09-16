@@ -9,7 +9,7 @@ const UsersList = ({users}) => {
     return (
         <div>
         {users.length === 0
-          ? <p>No users found based on the search key.</p>
+          ? <p>No users found based on the search key...</p>
           : <ul>
           {users.map((user) => {
             const name_full_formatted = user.firstName + " " + user.lastName;
